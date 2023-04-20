@@ -1,0 +1,47 @@
+import heapq
+
+def astar(start, goal, graph):
+    """
+    Implementation of A* algorithm.
+    :param start: Starting node.
+    :param goal: Goal node.
+    :param graph: Graph object with methods get_neighbors and get_cost.
+    :return: List of nodes representing the shortest path from start to goal.
+    """
+    # Initialize start node and open set
+    open_set = [(0, start, [])]
+    closed_set = set()
+
+    while open_set:
+        # Pop node with the smallest f-score
+        f_score, current, path = heapq.heappop(open_set)
+
+        # Goal reached
+        if current == goal:
+            return path + [current]
+
+        # Add current node to closed set
+        closed_set.add(current)
+
+        # Expand current node
+        for neighbor in graph.get_neighbors(current):
+            if neighbor in closed_set:
+                continue
+
+            # Calculate tentative g-score
+            tentative_g_score = graph.get_cost(current, neighbor) + f_score
+
+            # Add neighbor to open set with f-score and path
+            heapq.heappush(open_set, (tentative_g_score + heuristic(neighbor, goal), neighbor, path + [current]))
+
+    # No path found
+    return None
+
+def heuristic(node, goal):
+    """
+    Heuristic function for estimating distance between two nodes.
+    :param node: Current node.
+    :param goal: Goal node.
+    :return: Heuristic estimate of distance between node and goal.
+    """
+    return abs(node[0] - goal[0]) + abs(node[1] - goal[1])
